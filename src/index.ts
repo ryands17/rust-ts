@@ -28,11 +28,12 @@ const str = Result.Ok(123)
 
 console.log(str.unwrapOr(''));
 
+const UserSchema = z.array(z.object({ id: z.number(), name: z.string() }));
+
 // use async functions
 const API_URL = 'https://jsonplaceholder.typicode.com/users';
 const users = await Result.fromAsyncFn(
-  () =>
-    tsFetch(z.array(z.object({ id: z.number(), name: z.string() })), API_URL),
+  () => tsFetch(UserSchema, API_URL),
   new UsersNotFound(API_URL),
 );
 
@@ -41,7 +42,7 @@ match(users.result)
   .with({ ok: true }, (res) => {
     // do whatever you want with the result
     const users = res.value;
-    users.push({ id: 3, name: 'def' });
+    console.log(users);
   })
   .with({ ok: false }, (res) => console.error(res.err))
   .exhaustive();
